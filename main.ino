@@ -2,38 +2,62 @@
 #define LILYGO_WATCH_HAS_MOTOR
 #include <LilyGoWatch.h>
 #include "gestures.h"
+#include "small_app.h"
 
+TTGOClass* ttgo = nullptr;
+TFT_eSPI* tft = nullptr;
+gesture_class* gst = new gesture_class;
+curtain* crt = new curtain;
 
- TTGOClass* ttgo = nullptr;
- TFT_eSPI* tft = nullptr;
+bool is_scene_updated;
 
+button* btn = new button;
+
+void tmp_click(button* _btn)
+{
+	if (_btn->bckg_clr == TFT_RED)
+		_btn->bckg_clr = TFT_BLUE;
+	else
+		_btn->bckg_clr = TFT_RED;
+}
 
 void setup() 
 {
-  // put your setup code here, to run once:
 
-  ttgo = TTGOClass::getWatch();
-  ttgo->begin();
-  ttgo->openBL(); // Turn on the backlight (?)
+	ttgo = TTGOClass::getWatch();
+	ttgo->begin();
+	ttgo->openBL(); // Turn on the backlight (?)
+	
+	tft = ttgo->tft;
+	tft->fillScreen(TFT_BLACK);
+	tft->setTextColor(TFT_WHITE);
+	tft->setTextSize(4);
+	
+	btn->set_exec_func(tmp_click);
+	crt->add_btn(btn);
+	
+	crt->set_tft(tft);
 
-  tft = ttgo->tft;
-  tft->fillScreen(TFT_BLACK);
-  tft->setTextColor(TFT_WHITE);
-  tft->setTextSize(4);
+	is_scene_updated = false;	
 
 }
 
-gesture_class* gst = new gesture_class;
 
 void loop() 
 {
+	if (is_scene_updated == false)
+	{
+		crt->draw();
+		is_scene_updated = true;
+	}
 
-	gst->get_gesture(ttgo);
- 
-	gst->print(tft);
-	if (!gst->is_recognized())
-		tft->fillScreen(TFT_BLACK);
+	if (gst->get_gesture(ttgo))
+	{
 
+	if (gst->is_recognized())
+		if (crt->check_gesture(gst))
+			is_scene_updated = false;
+	}
 }
 
 // eof

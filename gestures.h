@@ -102,7 +102,7 @@ public:
 
 
 
-	void get_gesture(TTGOClass* ttgo)
+	int get_gesture(TTGOClass* ttgo)
 	{
 		int16_t sx, sy;
 		int16_t ex, ey;
@@ -112,7 +112,6 @@ public:
 		{
 			while (ttgo->getTouch(ex, ey))
 			{
-				ttgo->tft->fillScreen(TFT_BLACK);
 				delx = ex - sx;
 				dely = ey - sy;
 
@@ -121,7 +120,10 @@ public:
 			}
 
 			set(ex, ey, detect_type(delx, dely));
+			return 1;
 		}
+
+		return 0;
 	}
 
 
