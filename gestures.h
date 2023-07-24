@@ -120,6 +120,7 @@ public:
 			}
 
 			set(ex, ey, detect_type(delx, dely));
+			
 			return 1;
 		}
 
